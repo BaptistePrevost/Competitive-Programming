@@ -3,6 +3,9 @@
         "list": "cpp",
         "iterator": "cpp",
         "xutility": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "utility": "cpp",
+        "cmath": "cpp",
+        "xlocnum": "cpp"
     }
 }

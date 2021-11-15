@@ -1,146 +1,139 @@
 #include <iostream>
+#include <utility>
+#include <list>
 using namespace std;
 
-int abs(int a){
+int abs(int a) {
     if(a>0) return a;
     return -a;
 }
 
-int knightToKing(int x, int y, int X, int Y) { // 0 and 1
-    if(x == X && y == Y) return 0;
-    if(abs(X-x) + abs(y-Y) <= 2) return 1;
-    
-    int signX, signY;
-    if(x>X) signX = -1; 
-    else signX = 1;
-    if(y>Y) signY = -1; 
-    else signY = 1;
-
-    if(abs(x-X) > abs(y-Y)) return 1 + knightToKing(x + signX*2, y + signY*1, X, Y);
-    else return 1 + knightToKing(x + signX*1, y + signY*2, X, Y);
+bool isFree(int* board, int x, int y, int initialX, int initialY) {
+    if(x == initialX && y == initialY) return false;
+    if(x >= 0 && x <= 7 && y >= 0 && y <= 7) {
+        if(board[8*x + y] == 0) return true;
+    }
+    return false;
 }
 
-int knightToKnight(int x, int y, int X, int Y) { // 1 and 1
-    if(x == X && y == Y) return 0;
-    if(abs(x-X) + abs(y-Y) == 1) return 3;
-    if(abs(x-X) + abs(y-Y) == 2) return 2; 
+list<pair<int, int> > kingMoves(int* board, int x, int y, int initialX, int initialY) {
+    list<pair<int, int> > ret;
+    for(int i = -1; i < 2; i++) {
+        for(int j = -1; j < 2; j++) {
+            if(i == 0 && j == 0) continue;
+            if(isFree(board, x+i, y+j, initialX, initialY)) ret.push_back(make_pair(x+i, y+j));
+        }
+    }
+    return ret;
+}
 
-    int signX, signY;
-    if(x>X) signX = -1; 
-    else signX = 1;
-    if(y>Y) signY = -1; 
-    else signY = 1;
+list<pair<int, int> > knightMoves(int* board, int x, int y, int initialX, int initialY) {
+    list<pair<int, int> > ret;
+    for(int i = -2; i < 3; i++) {
+        for(int j = -2; j < 3; j++) {
+            if(abs(i) + abs(j) == 3) {
+                if(isFree(board, x+i, y+j, initialX, initialY)) ret.push_back(make_pair(x+i, y+j));
+            }
+        }
+    }
+    return ret;
+}
 
-    if(abs(x-X) > abs(y-Y)) return 1 + knightToKnight(x + signX*2, y + signY*1, X, Y);
-    else return 1 + knightToKnight(x + signX*1, y + signY*2, X, Y);
+list<pair<int, int> > towerMoves(int* board, int x, int y, int initialX, int initialY) {
+    list<pair<int, int> > ret;
+    for(int i = 0; i < 8; i++) {
+        if(isFree(board, i, y, initialX, initialY)) ret.push_back(make_pair(i, y));
+        if(isFree(board, x, i, initialX, initialY)) ret.push_back(make_pair(x, i));
+    }
+    return ret;
+}
+
+list<pair<int, int> > bishopMoves(int* board, int x, int y, int initialX, int initialY) {
+    list<pair<int, int> > ret;
+    for(int i = -7; i < 8; i++) {
+        if(isFree(board, x+i, y+i, initialX, initialY)) ret.push_back(make_pair(x+i, y+i));
+        if(isFree(board, x+i, y-i, initialX, initialY)) ret.push_back(make_pair(x+i, y-i));
+    }
+    return ret;
+}
+
+list<pair<int, int> > queenMoves(int* board, int x, int y, int initialX, int initialY) {
+    list<pair<int, int> > ret, tM = towerMoves(board, x, y, initialX, initialY), bM = bishopMoves(board, x, y, initialX, initialY);;
+
+    for(list<pair<int, int> >::iterator it = tM.begin(); it != tM.end(); it++) ret.push_back(*it);
+    for(list<pair<int, int> >::iterator it = bM.begin(); it != bM.end(); it++) ret.push_back(*it);
+
+    return ret;
 
 }
 
-int knightToBishop(int x, int y, int X, int Y) { // 1 and 2
-    if(abs(x-X) + abs(y-Y) == 3) return 1;
-    else if(abs(x-X) == abs(y-Y)) return 1;
-    else if((abs(x-X) + abs(y-Y)) % 2 == 0) return 2;
-    
-    int signX, signY;
-    if(x>X) signX = -1; 
-    else signX = 1;
-    if(y>Y) signY = -1; 
-    else signY = 1;
-
-    if(abs(x-X) > abs(y-Y)) return 1 + knightToBishop(x + signX*2, y + signY*1, X, Y);
-    else return 1 + knightToBishop(x + signX*1, y + signY*2, X, Y);
-
+list<pair<int, int> > getMoves(int* board, int f, int x, int y, int initialX, int initialY) {
+    if(f == 0) return kingMoves(board, x, y, initialX, initialY);
+    if(f == 1) return knightMoves(board, x, y, initialX, initialY);
+    if(f == 2) return queenMoves(board, x, y, initialX, initialY);
+    if(f == 3) return towerMoves(board, x, y, initialX, initialY);
+    else return bishopMoves(board, x, y, initialX, initialY);
 }
 
+void compute(int* board, int f, int x, int y) {
 
+    list<pair<int, int> > moves = getMoves(board, f, x, y, x, y);
+    int step = 1;
+
+    while(!moves.empty()) {
+        list<pair<int, int> > nextMoves;
+        for(list<pair<int, int> >::iterator it = moves.begin(); it != moves.end(); it++) board[8 * (*it).first + (*it).second] = step;
+        for(list<pair<int, int> >::iterator it = moves.begin(); it != moves.end(); it++) {
+            list<pair<int, int> > tempMoves = getMoves(board, f, (*it).first, (*it).second, x, y);
+            for(list<pair<int, int> >::iterator it2 = tempMoves.begin(); it2 != tempMoves.end(); it2++) {
+                    nextMoves.push_front(*it2);
+            }
+        }
+        moves = nextMoves;
+        step++;
+    }
+}
 
 int main() {
 
-    int usecases;
-    scanf("%i\n", &usecases);
+    int T;
     int f, x, y, F, X, Y;
+    scanf("%i\n", &T);
+    for(int t = 0; t < T; t++) {
+        int board[64];
+        int BOARD[64];
+        fill(board, board + 64, 0);
+        fill(BOARD, BOARD + 64, 0);
 
-    for(int i = 0; i < usecases; i++) {
-        scanf("%i %i %i %i %i %i\n", &f, &x, &y, &F, &X, &Y);
-        
-        if(x == X && y == Y) {
-            printf("%i\n", 0);
+        scanf("%i %i %i %i %i %i", &f, &x, &y, &F, &X, &Y);
+        if(x==X && y==Y) {
+            printf("0\n");
             continue;
         }
 
-        if(f == 0 && F == 0) {
-            printf("%i\n", max(abs(X-x), abs(Y-y)));
-
-        } else if ((f == 0 && F == 1) || (f == 1 && F == 0)) {
-            printf("%i\n", knightToKing(x,y,X,Y));
-
-        } else if ((f == 0 && F == 2) || (f == 2 && F == 0) ) {
-            if(x == X || y == Y) printf("%i\n", abs(X-x));
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", abs(X-x));
-            else printf("%i\n", 2);
-
-        } else if ((f == 0 && F == 3) || (f == 3 && F == 0)) {
-            if(x-X == 0 || y-Y == 0) printf("%i\n", 1);
-            else if (abs(X-x) == 1 && abs(Y-y) == 1) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 0 && F == 4) || (f == 4 && F == 0)) {
-            if(abs(X-x) <= 1 && abs(Y-y) <= 1) printf("%i\n", 1);
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else if(abs(abs(X-x) - abs(Y-y)) == 1) printf("%i\n", 2);
-            else printf("%i\n", 2+(abs(X-x) + abs(Y-y))%2);
-
-        } else if (f == 1 && F == 1) {
-            printf("%i\n", knightToKnight(x,y,X,Y));
-
-        } else if ((f == 1 && F == 2) || (f == 2 && F == 1)) {
-            if(abs(x-X) + abs(y-Y) == 3) printf("%i\n", 1);
-            else if(abs(x-X) == abs(y-Y)) printf("%i\n", 1);
-            else if (x == X || y == Y) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 1 && F == 3) || (f == 3 && F == 1)) {
-            if(abs(x-X) + abs(y-Y) == 3) printf("%i\n", 1);
-            else if (x == X || y == Y) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 1 && F == 4) || (f == 4 && F == 1)) {
-            printf("%i\n", knightToBishop(x,y,X,Y));
-
-        } else if (f == 2 && F == 2) {
-            if(abs(X-x) == 0 || abs(Y-y) == 0) printf("%i\n", 1);
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 2 && F == 3) || (f == 3 && F == 2)) {
-            if(abs(X-x) == 0 || abs(Y-y) == 0) printf("%i\n", 1);
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 2 && F == 4) || (f == 4 && F == 2)) {
-            if(abs(X-x) == 0 || abs(Y-y) == 0) printf("%i\n", 1);
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if (f == 3 && F == 3) {
-            if(abs(X-x) == 0 || abs(Y-y) == 0) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if ((f == 3 && F == 4) || (f == 4 && F == 3)) {
-            if(abs(X-x) == 0 || abs(Y-y) == 0) printf("%i\n", 1);
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else printf("%i\n", 2);
-
-        } else if (f == 4 && F == 4) {
-            if((abs(X-x) + abs(Y-y))%2 == 1) printf("%s\n", "INF");
-            else if (abs(X-x) == abs(Y-y)) printf("%i\n", 1);
-            else printf("%i\n", 2);
+        if(f==4 && F==4) {
+            if((abs(X-x)+abs(Y+y))%2==1) {
+                printf("INF\n");
+                continue;
+            }
         }
+
+        compute(board, f, x, y);
+        compute(BOARD, F, X, Y);
+        int min = 9;
+        for(int i = 0; i < 8; i ++) {
+            for(int j = 0; j < 8; j++) {
+                if((board[8*i + j] != 0 || (i==x && j==y)) && (BOARD[8*i + j] != 0 || (i==X && j==Y))) {
+                    if(min > board[8*i + j] + BOARD[8*i + j]) min = board[8*i + j] + BOARD[8*i + j];
+                }
+            }
+        }
+        printf("%i\n", min);
+
     }
-
-
     return 0;
 }
+
 
 /*
 0 - King
