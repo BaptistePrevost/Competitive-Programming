@@ -6,6 +6,7 @@
         "cstdlib": "cpp",
         "utility": "cpp",
         "cmath": "cpp",
-        "xlocnum": "cpp"
+        "xlocnum": "cpp",
+        "iostream": "cpp"
     }
 }
