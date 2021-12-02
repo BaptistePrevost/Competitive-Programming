@@ -2,8 +2,7 @@
     Author : Baptiste Prévost
 
     Idea : 
-        -
-        -
+        - Basic greedy algorithm
 */
 
 #include <iostream>
@@ -13,26 +12,26 @@
 using namespace std;
 
 int main() {
-    int t, n, a;
-    int ret[200002];
-    scanf("%i", &t);
+    long long int t, n, a;
+    long long int ret[200002];
+    scanf("%lld", &t);
     while(t--) {
-        list< pair< int, int> > v;
-        scanf("%i", &n);
-        for(int i = 1; i <= n; i++) {
-            scanf("%i", &a);
+        list< pair< long long int, long long int> > v;
+        scanf("%lld", &n);
+        for(long long int i = 1; i <= n; i++) {
+            scanf("%lld", &a);
             v.push_back(make_pair(-a, i));
         }
         v.sort();
-        int dist = 0, done = 0;
-        for(list< pair< int, int> >::iterator it = v.begin(); it != v.end(); it++) {
+        long long int dist = 0, done = 0;
+        for(list< pair< long long int, long long int> >::iterator it = v.begin(); it != v.end(); it++) {
             dist += (done/2 + 1)*(-it->first)*2;
-            ret[it->second] = pow(-1, done/2)*(done/2 + 1);
+            ret[it->second] = pow(-1, done)*(done/2 + 1);
             done++;
         }
-        printf("%i\n0", dist);
-        for(int i = 0; i < n; i++) {
-            printf(" %i", ret[i+1]);
+        printf("%lld\n0", dist);
+        for(long long int i = 0; i < n; i++) {
+            printf(" %lld", ret[i+1]);
         }
         printf("\n");
     }
