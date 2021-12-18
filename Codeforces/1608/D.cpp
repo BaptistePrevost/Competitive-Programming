@@ -2,30 +2,46 @@
     Author : Baptiste Prévost
 
     Idea : 
-        - #BB == #WW
-        - We will suppose that we want to reduce the chain to WB or BW
-        - If BW, we have #WB>=1 => #BB>=1
+        - For each correct coloring, there must be in total n white cells, and n black cells => Necessary condition, but not sufficient
+        - Counting these coloring is relatively simple. We must now substract the number of incorrect colorings among them.
+        - Only possible colorings are with no BB or WW domino, and both WB and BW dominoes 
 */
 
 #include <iostream>
 #include <string>
+#include <map>
+#include <utility>
 #include "math.h"
 using namespace std;
 
+map<int, map<int, long long int> > mem;
 
-long long int fact(int n) {
-    if(n==0) return 1;
-    else return n*fact(n-1);
+long long int among(int k, int n ){ // Have to perform memoïsation here ...
+    if(k == 0) return 1;
+    if(k > n) return 0;
+    long long int a, b;
+    if(mem[k-1][n-1]) a = mem[k-1][n-1];
+    else a = among(k-1, n-1);
+    if(mem[k][n-1]) b = mem[k-1][n-1];
+    else b = among(k, n-1);
+    
+    long long ret = (a+b)%998244353;
+    mem[k][n] = ret;
+    return ret;
 }
 
-long long int among(int k, int n ){
-    // if(k == 0) return 1;
-    // if(k > n) return 0;
-    // return among(k-1, n-1) + among(k, n-1);
+long long int fastPow(long long int base, long long int power) {
+        long long result = 1;
+    while(power > 0) {
 
-    return fact(n)/fact(n-k);
+        if(power % 2 == 1) { // Can also use (power & 1) to make code even faster
+            result = (result*base) % 998244353;
+        }
+        base = (base * base);
+        power = power / 2; // Can also use power >>= 1; to make code even faster
+    }
+    return result;
 }
-
 
 int main() {
     int n;
@@ -46,45 +62,23 @@ int main() {
         else uu++;
     }
 
-    long long int ret = 0;
 
-    int to_build = abs(bb-ww);
-    long long int ret = 0;
+    int total_black = 2*bb + wb + bw + ub + bu;
+    int total_white = 2*ww + wb + bw + uw + wu;
 
-    if(bw>0) {
-        if(bb > ww) { //add ww. candidates are uu, uw, wu.
-            int k, z;
-            for(int i=0; i<=to_build; i++){ //i uw, j wu, k uu
-                for(int j=0; j<=to_build-i; j++) {
-                    k = to_build-i-j;
-                    int f1 = among(i, uw)*among(j, wu)*among(k, uu);
-
-                    for(int bonus=0; bonus<0; bonus++) {
-                        for(int x=0; x<=bonus; x++) { //x uw, y wu, z uu
-                            for(int y=0; y<=bonus-x; y++) {
-                                z = bonus-x-y;
-                                int f2 = among(x, uw-i)*among(y, wu-j)*among(z, uu-k);
-
-                            }
-                        }
-                    }
-                }
-            }
-        } else if (ww > bb) { //add bb, candidates are uu, ub, bu.
-
-            //Then, build same number of bb and ww, and the rest as you want
-        } else if(bb>0){
-            //Then, build same number of bb and ww, and the rest as you want
-        
-        } else { //bb == ww == 0 initially
-            //build only bw, or at least 1 ww and 1 bb and then what you want
-        }
-
+    if(total_black > n || total_white > n) {
+        cout << 0 << endl;
     } else {
+        long long int ret = among(n - total_white, 2*n - total_white - total_black);
+
+        if(bb == 0 && ww == 0) { //otherwise, there is no impossible coloring
+            long long int forbidden = fastPow(2, uu); //Initialize with colorings with WB or BW only, then substract colorings with WB only and BW only
+            if(wb+wu+ub > 0) forbidden--;
+            if(bw+bu+uw > 0) forbidden--;
+            ret-= forbidden;
+        }
+        cout << ret%998244353 << endl;
 
     }
-
-    cout << ret << endl;
-
     return 0;
 }
