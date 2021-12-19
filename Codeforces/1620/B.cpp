@@ -4,18 +4,18 @@
     Idea : 
         - Find the extreme points on each side
         - compare all possible triangles
-        - WA, no idea why
+        - Areas are larger than simple int limit, careful
 */
 
 #include <iostream>
 using namespace std;
 
 struct p{
-    int x,y;
+    unsigned long long int x,y;
 };
 
 int main() {
-    int t, w, h, k, x, y;
+    unsigned long long int t, w, h, k, x, y;
     struct p p1a, p1b, p2a, p2b, p3a, p3b, p4a, p4b;
     cin >> t;
     while(t--) {
@@ -74,8 +74,12 @@ int main() {
             }
         }
 
-
-        cout << max(max(p1b.x-p1a.x, p2b.x - p2a.x)*h, max(p3b.y-p3a.y, p4b.y - p4a.y)*w) << endl;
+        unsigned long long int t1 = (p1b.x-p1a.x)*h;
+        unsigned long long int t2 = (p2b.x - p2a.x)*h;
+        unsigned long long int t3 = (p3b.y-p3a.y)*w;
+        unsigned long long int t4 = (p4b.y - p4a.y)*w;
+        cout<<max(max(max(t1, t2), t3), t4)<<endl;
+        // cout << max(max(p1b.x-p1a.x, p2b.x - p2a.x)*h, max(p3b.y-p3a.y, p4b.y - p4a.y)*w) << endl;
     }
     return 0;
 }
