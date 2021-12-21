@@ -73,7 +73,6 @@ int main() {
 
         for(unsigned long long int i = 0; i < bs; i++) cout<<"b";
         for(unsigned long long int i = 0; i < l[index].second; i++) cout<<"a";
-        // cout << "Here  count is " << count << " and decount is "<< decount << " and x is "<< x <<". It begins with " << bs  <<" b."<< endl;
         index--;
         
         x-=bs*count;
@@ -84,7 +83,6 @@ int main() {
             count = current;
             temp.pop_back();
             bs = x/count;
-            // cout << "Here  count is " << count << " and decount is "<< decount << " and x is "<< x <<". It continues with " << bs <<" b."<< endl;
             x-=bs*count;
             for(unsigned long long int i = 0; i < bs; i++) cout<<"b";
             for(unsigned long long int i = 0; i < l[index].second; i++) cout<<"a";
