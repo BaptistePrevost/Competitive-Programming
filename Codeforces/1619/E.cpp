@@ -12,9 +12,9 @@
 using namespace std;
 
 int main() {
-    int t, n, a[200001];
-    int mini = 200000;
-    int occurences[200001];
+    int t, n;
+    long long a[200001];
+    long long occurences[200001];
     cin >> t;
     while(t--) {
         fill(occurences, occurences+200001, 0);
@@ -22,12 +22,11 @@ int main() {
         for(int i=0; i<n; i++) {
             cin >> a[i];
             occurences[a[i]]++;
-            if(a[i]<mini) mini = a[i];
         }
 
         sort(a, a+n);
-        int index = 0, mex = 0, buildCost = 0, last=-1;
-        list<int> unused;
+        long long index = 0, mex = 0, buildCost = 0, last=-1;
+        list<long long> unused;
         while(mex<=n) {
             while(index < n && a[index]<mex) {
                 if(a[index]==last) unused.push_back(last);
