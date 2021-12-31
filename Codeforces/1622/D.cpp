@@ -1,90 +1,33 @@
-/*
-    Author : Baptiste Prévost
-
-    Idea :
-        -
-        -
-*/
-
 #include <iostream>
-#include <vector>
 using namespace std;
 
+typedef long long ll;
 #define forn(i, n) for (int i = 0; i < int(n); i++)
-#define ll long long
 
-#define MOD 998244353
+const int N=5010,mod=998244353;
 
-ll among(int k, int n) {
-    if(k>n) return 0;
-    if(k==0) return 1;
-    if(k==1) return n;
+inline int inc(int x,int y){return x+y>=mod?x+y-mod:x+y;}
+inline int dec(int x,int y){return x-y<0?x-y+mod:x-y;}
 
-    return among(k, n-1) + among(k-1, n-1);
-}
+int n,k,m,pos[N],c[N][N];
+string a;
 
-vector<int> v;
-int main() {
-    int t, n, k;
-    string s;
-    cin >> t;
-    ll res;
+int main(){
+	cin>>n>>k>>a;
+    a=" "+a;
+	if(!k){cout<<1<<'\n';return 0;}
+	for(int i=1;i<=n;++i)if(a[i]=='1') pos[++m]=i;
+	if(m<k){cout<<1<<'\n';return 0;}
+
+	for(int i=0;i<=n;++i){
+		c[i][0]=1;
+		for(int j=1;j<=i;++j)
+			c[i][j]=inc(c[i-1][j],c[i-1][j-1]);
+	}
     
-    while(t--) {
-        v.clear();
-        res = 1;
-        cin >> n >> k;
-        cin >> s;
-        
-        forn(i, n) {
-            if(s[i] == '1') v.push_back(i);
-        }
-
-        if(v.size() < k || k == 0) {
-            cout << '1' << endl;
-            continue;
-        }
-
-        int before=0, inside=0, after=0;
-        //first
-        before = 0;
-        inside = 0;
-        forn(i, k-1) {
-            inside += v[i+1] - v[i] - 1;
-        }
-        if(k<v.size()) after = v[k]-v[k-1]-1;
-        // cout << "First / before " << before << ", inside : " << inside << ", after: " << after  << endl;
-        res += (among(k, before + inside + after + k)-1)%MOD;
-        // cout << k << " among " << before + inside + after + k<< endl;
-
-
-        for(int i=1; i+k-1 < v.size()-1 ; i++) { //is n always > k ?
-            // cout << "Loop /";
-            before = inside;
-            inside = after;
-            after = v[i+k] - v[i+k-1] - 1;
-            // cout << "before : " << before << "inside : " << inside << "after : " << after << endl;
-            // cout << k << " among " << before + inside + after + k<< endl;
-            res += among(k, before + inside + after + k)-1;
-            res -= among(k-1, before+k-1)-1;
-            res %= MOD;
-            // cout << " before " << before << ", inside : " << inside << ", after: " << after  << endl;
-        }
-
-        //last
-        before = inside;
-        inside = after;
-        after = n - 1 - v.back();
-        res += among(k, before + inside + after + k)-1;
-        // cout << k << " among " << before + inside + after + k << " is " << among(k, before + inside + after + k) << endl;
-        res -= among(k-1, before+k-1)-1;
-        res %= MOD;
-        // cout << "before " << before << ", inside : " << inside << ", after: " << after  << endl;
-        //!\\ Careful when reaching the end of the string
-
-        cout << res << endl;
-
-    }
-
-    return 0;
+	pos[0]=0,pos[m+1]=n+1;
+	int ans=0;
+	for(int i=1;i<=m-k+1;++i)ans=inc(ans,c[pos[i+k]-pos[i-1]-1][k]);
+	for(int i=2;i<=m-k+1;++i)ans=dec(ans,c[pos[i+k-1]-pos[i-1]-1][k-1]);
+	cout<<ans<<'\n';
 }
