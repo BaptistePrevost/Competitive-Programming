@@ -7,69 +7,46 @@
 */
 
 #include <iostream>
-#include <list>
+#include <vector>
 using namespace std;
 
 #define forn(i, n) for (int i = 0; i < int(n); i++)
 typedef long long ll;
 
-int count, p[10001];
-bool done[10001];
-list<int> cycle;
+int ask(int i) {
+    cout << "? " << i << endl;
+    int x;
+    cin >> x;
+    return x;
+}
 
 int main() {
-    int t, n, index, q, a, length, cycleCount;
+    int t, n, length, cycleCount;
     cin >> t;
 
     while(t--) {
         cin >> n;
-        for(int i = 1; i <=n; i++) done[i] = false;
 
-        count = 0;
-        index = 1;
-        cycleCount = 0;
-        while(count < n) {
-            cycle.clear();
-            while(done[index]) index++; //find first free index
+        vector<int> p(n+1, -1);
 
-            q = index;
-            cycle.push_back(a);
+        for(int i=1; i<=n; i++) {
+            if(p[i]==-1) {
+                vector<int> cycle;
+                int goal = ask(i);
+                int current = ask(i);
+                cycle.push_back(current);
+                while(current != goal) {
+                    current = ask(i);
+                    cycle.push_back(current);
+                }
 
-            cout << "? " << q << endl << flush;
-            cin >> a;
-
-            cout << "? " << q << endl << flush;
-            cin >> a;
-            length = 1;
-            cycle.push_back(a);
-
-            while(a != index) {
-                cout << "? " << q << endl << flush;
-                cin >> a;
-                length++;
-                cycle.push_back(a);
+                forn(j, cycle.size()) p[cycle[j]] = cycle[(j+1)%cycle.size()];
             }
-
-            //store result
-            int cur1 = cycle.front(), cur2 = 0;
-            cycle.pop_front();
-
-
-            forn(i, length) {
-                cur2 = cycle.front();
-                p[cur1] = cur2;
-                done[cur1] = true;
-                cur1 = cur2;
-                cycle.pop_front();
-            }
-
-            count += length;
-            cycleCount ++;
         }
         
         cout << "!";
-        for(int i=1; i<=n; i++) cout << " " << p[i];
-        cout << endl << flush;
+        forn(i, n) cout << " " << p[i+1];
+        cout << endl;
     }
 
     return 0;
