@@ -1,3 +1,13 @@
+'''
+    Author : Baptiste Prévost
+
+    Idea :
+        - We iterate over the bits of a mask, asserting whether we should keep the edges or not
+        - I had trouble to beat TLE, and looked at "* r57shell" (https://codeforces.com/contest/1624/submission/142312509) code.
+        - The best idea is an UnionFind algorithm. I also copied his setup for IO
+'''
+
+
 import sys
 inp = sys.stdin.readline
 
