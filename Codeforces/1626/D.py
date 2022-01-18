@@ -1,58 +1,35 @@
-import sys
-import math
-inp = sys.stdin.readline
-
 pow2 = [1]
-for _ in range(16):
+while pow2[-1]<200000:
     pow2.append(pow2[-1]*2)
 
-def getCost(i: int):
-    index = 0
-    while pow2[index]<i:
-        index+=1
-    return pow2[index]-i
+def getCost(k: int):
+    for i in range(len(pow2)):
+        if pow2[i]>=k:
+            return pow2[i]-k
 
-for _ in range(int(inp())):
-    n = int(inp())
-    a = list(map(int, inp().split()))
-    a.append(-1)
-    a.append(-2)
-    a.append(200005)
-    a.append(200006)
-    a.sort()
-    w = list(set(a))
-    w.sort()
+for _ in range(int(input())):
+    n = int(input())
+    a = sorted(list(map(int, input().split())))
 
-    count={}
-    for z in a:
-        if not z in count:
-            count[z]=1
-        else:
-            count[z]+=1
-    count[-2]=0
-    count[-1]=0
-    count[200005]=0
-    count[200006]=0
-
-    x=0
-    xCount = count[w[x]]
-    best = 200005
-    if(len(w)>1):
-        while x < len(w)-1:
-            y=len(w)-1
-            yCount = count[w[y]]
-            while y>x and y > 0:
-                # print("x", w[x], "y", w[y])
-                # print("xCount", xCount, "yCount", yCount)
-                temp = getCost(xCount) + getCost(yCount) + getCost(n-xCount-yCount)
-                if temp<best:
-                    # print("best here")
-                    best = temp
-                y-=1
-                yCount+=count[w[y]]
-            x+=1
-            xCount += count[w[x-1]]
-    else:
-        best = getCost(w[0])+2
-    print(best)
+    first = {}
+    for i in range(len(a)):
+        if a[i] not in first:
+            first[a[i]]=i
     
+    ans = 200005
+    for i in range(len(a)):
+        x = a[i]
+        if i!=0 and a[i]==a[i-1]:
+            continue
+        mid=0
+        while i+mid<n:
+            y = a[i+mid]
+            j = first[y]
+            bounds = (i, j-i, n-j)
+            ans = min(sum(map(getCost, bounds)), ans)
+            if not mid:
+                mid=1
+            else:
+                mid*=2
+
+    print(ans)
