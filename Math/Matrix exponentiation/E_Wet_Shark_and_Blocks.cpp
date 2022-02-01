@@ -1,7 +1,34 @@
+/*
+    Author : Baptiste Prévost
+
+    Super interesting problem. Matrix exponentiation can also be used for combinatorics even with modulos.
+
+    Idea :
+        - First count the occurences of each digit.
+        - To build the matrix M, we iterate i from 0 to x-1, then a digit d from 0 to 9.
+            M[i][j]!=0 means that we can pick a digit in a block at the current step to make the resulting number modulo x go from i to j.
+        - in our case, i=i, and j=(10*i + d)%x. We add to M[i][j] the number of occurences of d
+        - The matrix M is all set for exponentiation. The result is M**b[0][k], which is literaly the number of ways to obtain a number so that modulo x = k after b steps.
+*/
+
 #include<bits/stdc++.h>
 using namespace std;
 
-const long long MOD = 998244353;
+#define forn(i, n)  for (int i = 0; i < int(n); i++)
+typedef long long int ll;
+const ll MOD=1e9+7;
+
+#define sz(x)       ((ll) (x).size())
+#define all(x)      (x).begin(), (x).end()
+#define pll         pair<ll,ll>
+#define vl          vector<ll>
+#define ff          first
+#define ss          second
+#define pb          push_back
+#define pp          pop_back
+#define frr(i,j,k)  for(ll i=j; i<k; i++)
+#define andar(x)    for(ll&i:x) cin>>i;
+#define bahar(x)    for(ll&i:x) cout<<i<<' ';
 
 struct Matrix {
     long long n, m;
@@ -94,18 +121,21 @@ struct Matrix {
     inline bool operator != (const Matrix& b) { return a != b.a;}
 };
 
-Matrix distanceProduct(const Matrix &a, const Matrix &b, long long infinity) {
-    //Used in Floyd-Marshall algorithm, but you have to non-existing edges to infinity
-    assert(a.m==b.n);
-    Matrix ans(a.a);
-        for(long long i=0; i<a.n; i++) {
-            for(long long j=0; j<a.n; j++) {
-                long long mini = 1e9+7;
-                for(long long k=0; k<a.m; k++) {
-                    if(a.a[i][k]!=infinity && b.a[k][j]!=infinity) mini = min(mini, (a.a[i][k]+b.a[k][j])%MOD);
-                }
-                ans.a[i][j]=mini;
-            }
+int main() {
+    ll n, b, k, x;
+    cin >> n >> b >> k >> x;
+    int d, digits[10]{};
+    forn(i, n) {
+        cin >> d;
+        digits[d]++;
+    }
+    Matrix a(x,x);
+    forn(i, x) {
+        forn(j, 10) {
+            a.a[i][(10*i + j)%x]+= digits[j];
         }
-    return ans;
+    }
+    a = a.pow(b);
+    cout << ((a.a[0][k])%MOD);
+    return 0;
 }
