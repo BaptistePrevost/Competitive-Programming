@@ -1,0 +1,5 @@
+.vscode/
+ac-library/
+*prog
+*.in
+*.out
