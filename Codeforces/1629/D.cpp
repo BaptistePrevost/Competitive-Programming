@@ -1,7 +1,7 @@
 /*
     Problem : https://codeforces.com/contest/1629/problem/D
     Author : Baptiste Prévost
-    Subjects : string, palindrom
+    Subjects : string, palindrom, optimal solution characteristics
 
     Idea : Since all strings are length 2 or 3, any palindrom subsequence can be reduced to be only 1 ou 2 strings long.
     Process each string by checking whether suitable palindrom candidates have been seen earlier.
