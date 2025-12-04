@@ -7,9 +7,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-vector<bool> sieve(int n) {
+vector<bool> sieve_vector(int n) {
     /*
-        Ignore the even numbers
+        Ignore the even numbers.
+        Return a vector of boolean
     */
     vector<bool> is_prime(n+1, true);
     is_prime[0] = is_prime[1] = false;
@@ -21,6 +22,25 @@ vector<bool> sieve(int n) {
         }
     }
     return is_prime;
+}
+
+vector<int> sieve_list(int n) {
+    /*
+        Ignore the even numbers
+        Return a vector of prime int
+    */
+    vector<bool> is_prime(n+1, true);
+    vector<int> primes = {2};
+    is_prime[0] = is_prime[1] = false;
+    for(int i=3; i*i <= n; i+=2) {
+        if(is_prime[i]) {
+            primes.push_back(i);
+            for(int j=i*i; j<=n; j+=2*i) {
+                is_prime[j]=false;
+            }
+        }
+    }
+    return primes;
 }
 
 unsigned int countPrimes(unsigned int n) {
@@ -66,17 +86,17 @@ unsigned int countPrimes(unsigned int n) {
 
 vector<char> segmentedSieve(long long unsigned L, long long unsigned R) {
     /*
-        Could still be optimised by ignoring the even numbersf
+        Could still be optimised by ignoring the even numbers
     */
     long long unsigned lim = sqrt(R);
     vector<char> mark(lim+1, false);
     vector<long long unsigned> primes;
 
     for(long long unsigned i=2; i<=lim; ++i) {
-        if(!mark[i] {
+        if(!mark[i]) {
             primes.emplace_back(i);
             for(long long unsigned j=i*i; j<=lim; j += i) mark[j]=true;
-        })
+        }
     }
     
     vector<char> isPrime(R - L + 1, true);
@@ -86,7 +106,7 @@ vector<char> segmentedSieve(long long unsigned L, long long unsigned R) {
     if (L == 1)
         isPrime[0] = false;
     return isPrime;
-}}
+}
 
 
 int main() {

@@ -1,6 +1,6 @@
 # Practice topic list
 
-Keep track of my progress on the topic list ([here](https://blog.shahjalalshohag.com/topic-list/)) found in [YouKn0wWho's blog](https://codeforces.com/blog/YouKn0wWho).<br>
+Keep track of my progress on the topic list ([here](https://youkn0wwho.academy/topic-list)) found in [YouKn0wWho's blog](https://codeforces.com/blog/YouKn0wWho).<br>
 
 <details>
 <summary>Basics</summary>

@@ -1,0 +1,66 @@
+use io;
+
+function main()  {
+    local inFile = io.openRead("/home/bprevost/Competitive-Programming/Advent of Code/1.in");
+
+    local str = inFile.read(17709);
+
+    local ans = 0;
+    local active = true;
+    
+    for[i in 0...str.length()-6] {
+        if(str.substring(i,4) == "mul(") {
+            local j = i+4;
+            local validLHS = true;
+            while(validLHS) {
+                try {
+                    str.substring(j,1).toInt();
+                    validLHS = true;
+                    j += 1;
+                } catch (e) {
+                    try {
+                        if(str.substring(j,1) != ",") validLHS = false;
+                        break;
+                    } catch (f) {
+                        validLHS = false;
+                    }
+                }
+            }
+            if(validLHS) {
+                local lhs = str.substring(i+4, j-i-4).toInt();
+                println("lhs\t", lhs);
+                local k = j+1;
+                local validRHS = true;
+                while(validRHS) {
+                    try {
+                        str.substring(k,1).toInt();
+                        validRHS = true;
+                        k += 1;
+                    } catch (e) {
+                        try {
+                            if(str.substring(k,1) != ")") validRHS = false;
+                            break;
+                        } catch (f) {
+                            validRHS = false;
+                        }
+                    }
+                }
+                if(validRHS) {
+                    local rhs = str.substring(j+1, k-j-1).toInt();
+                    println("rhs\t", rhs);
+                    if(active) ans += lhs * rhs;
+                }
+            }
+        }
+
+        if(active == true) {
+            if(str.substring(i,7) == "don't()") active = false;
+        } else {
+            if(str.substring(i,4) == "do()") active = true;
+        }
+    }
+
+    println(ans);
+
+    inFile.close();
+}
